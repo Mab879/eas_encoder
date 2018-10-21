@@ -31,8 +31,8 @@ void Audio::generate_dual_tone(double freq1, double freq2, std::vector<double> &
 void Audio::generate_afsk(std::vector<double> &vector, __1::vector<bool> &message) {
     long length = static_cast<long>(round(SAMPLE_RATE * (1 / DATA_RATE)));
 
-    for (short i : message) {
-        if (i == 0) {
+    for (bool i : message) {
+        if (i) {
             generate_tone(MARK_FREQ, vector, length);
         } else {
             generate_tone(SPACE_FREQ, vector, length);

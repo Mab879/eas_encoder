@@ -15,14 +15,14 @@ int main() {
     auto *bits = new std::vector<bool>();
 
     Utils::bit_string_to_bit_stream((vector<bool> &) *bits, PREAMBLE);
-    Utils::bit_string_to_bit_stream((vector<bool> &) *bits, HEADER);
+    Utils::string_to_bit_stream((vector<bool> &) *bits, HEADER);
     Utils::string_to_bit_stream((vector<bool> &) *bits, "-WXR");
     Utils::string_to_bit_stream((vector<bool> &) *bits, "-TOR");
-    Utils::string_to_bit_stream((vector<bool> &) *bits, "-017021");
-    Utils::string_to_bit_stream((vector<bool> &) *bits, "-017115");
+    Utils::string_to_bit_stream((vector<bool> &) *bits, "-019169");
+    Utils::string_to_bit_stream((vector<bool> &) *bits, "-019153");
     Utils::string_to_bit_stream((vector<bool> &) *bits, "+0045");
-    Utils::string_to_bit_stream((vector<bool> &) *bits, "-1000042");
-    Utils::string_to_bit_stream((vector<bool> &) *bits, "-KILX/NWS-");
+    Utils::string_to_bit_stream((vector<bool> &) *bits, "-2941320");
+    Utils::string_to_bit_stream((vector<bool> &) *bits, "-KDSM/NWS-");
 
     Audio::generate_tone(0, (vector<double> &) *sound_data, SAMPLE_RATE);
 
@@ -37,12 +37,12 @@ int main() {
 
     bits->clear();
 
-    Audio::generate_tone(WAT_FREQ_1 + WAT_FREQ_2, (vector<double> &) *sound_data, SAMPLE_RATE * 5);
+    Audio::generate_tone(NRW_WAT_FREQ, (vector<double> &) *sound_data, SAMPLE_RATE * 8);
     //Audio::generate_dual_tone(WAT_FREQ_1, WAT_FREQ_2, (vector<double> &) *sound_data, SAMPLE_RATE * 5);
     Audio::generate_tone(0, (vector<double> &) *sound_data, SAMPLE_RATE);
 
     Utils::bit_string_to_bit_stream((vector<bool> &) *bits, PREAMBLE);
-    Utils::bit_string_to_bit_stream((vector<bool> &) *bits, EOM);
+    Utils::string_to_bit_stream((vector<bool> &) *bits, EOM);
 
     Audio::generate_afsk((vector<double> &) *sound_data, (vector<bool> &) *bits);
     Audio::generate_tone(0, (vector<double> &) *sound_data, SAMPLE_RATE);
