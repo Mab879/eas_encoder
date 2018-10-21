@@ -27,7 +27,7 @@ void Utils::bit_string_to_bit_stream(std::vector<bool> &vector, std::string bits
     for (std::size_t i = 0; i < bitstring.size(); i++) {
         if (bitstring[i] == '0') {
             vector.push_back(false);
-        } else if {
+        } else if (bitstring[i] == '1') {
             vector.push_back(true);
         }
         else {
