@@ -1,11 +1,19 @@
-//
-// Created by Matthew Burket on 10/19/18.
-//
+/* This file is a part of EAS Encoder.
+ *
+ * Copyright (C) 2018 Matthew Burket
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 3
+ * of the License, or (at your option) any later version.
+ */
 
 #include <string>
 #include <vector>
 #include <bitset>
+#include <stdexcept>
 #include "Utils.h"
+#include "audio.h"
 
 /// Given a string convert each character to binary add that binary to the given vector
 /// \param vector the vector to add the bits to
@@ -24,10 +32,10 @@ void Utils::string_to_bit_stream(std::vector<bool> &vector, std::string message)
 /// \param vector vector the vector to add the bits to
 /// \param bitstring the bitstring to convert
 void Utils::bit_string_to_bit_stream(std::vector<bool> &vector, std::string bitstring) {
-    for (std::size_t i = 0; i < bitstring.size(); i++) {
-        if (bitstring[i] == '0') {
+    for (char i : bitstring) {
+        if (i == '0') {
             vector.push_back(false);
-        } else if (bitstring[i] == '1') {
+        } else if (i == '1') {
             vector.push_back(true);
         }
         else {

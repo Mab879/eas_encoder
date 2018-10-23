@@ -1,3 +1,13 @@
+/* This file is a part of EAS Encoder.
+ *
+ * Copyright (C) 2018 Matthew Burket
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 3
+ * of the License, or (at your option) any later version.
+ */
+
 #include <iostream>
 #include <math.h>
 
@@ -37,8 +47,8 @@ int main() {
 
     bits->clear();
 
-    Audio::generate_tone(NRW_WAT_FREQ, (vector<double> &) *sound_data, SAMPLE_RATE * 8);
-    //Audio::generate_dual_tone(WAT_FREQ_1, WAT_FREQ_2, (vector<double> &) *sound_data, SAMPLE_RATE * 5);
+    //Audio::generate_tone(NRW_WAT_FREQ, (vector<double> &) *sound_data, SAMPLE_RATE * 8);
+    Audio::generate_dual_tone(WAT_FREQ_1, WAT_FREQ_2, (vector<double> &) *sound_data, SAMPLE_RATE * 5);
     Audio::generate_tone(0, (vector<double> &) *sound_data, SAMPLE_RATE);
 
     Utils::bit_string_to_bit_stream((vector<bool> &) *bits, PREAMBLE);

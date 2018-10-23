@@ -1,6 +1,12 @@
-//
-// Created by Matthew Burket on 10/18/18.
-//
+/* This file is a part of EAS Encoder.
+ *
+ * Copyright (C) 2018 Matthew Burket
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 3
+ * of the License, or (at your option) any later version.
+ */
 
 #ifndef SAMEENCODER_EAS_H
 #define SAMEENCODER_EAS_H
@@ -14,7 +20,6 @@
 #define WAT_FREQ_2 960
 #define EOM "NNNN"
 #define HEADER "ZCZC"
-#define DASH -
 #define PREAMBLE "10101011101010111010101110101011101010111010101110101011101010111010101110101011101010111010101110101011101010111010101110101011"
 
 
