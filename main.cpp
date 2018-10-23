@@ -63,7 +63,7 @@ int main() {
     Audio::generate_afsk((vector<double> &) *sound_data, (vector<bool> &) *bits);
     Audio::generate_tone(0, (vector<double> &) *sound_data, SAMPLE_RATE);
 
-    struct SF_INFO info;
+    struct SF_INFO info{};
 
     info.channels = 1;
     info.format = SF_FORMAT_WAV | SF_FORMAT_PCM_32;
@@ -81,6 +81,7 @@ int main() {
     sf_write_sync(sf);
     sf_close(sf);
 
-
+    delete bits;
+    delete sound_data;
 }
 
