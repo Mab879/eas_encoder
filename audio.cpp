@@ -7,10 +7,10 @@
  * as published by the Free Software Foundation; either version 3
  * of the License, or (at your option) any later version.
  */
-
-#include "eas.h"
 #include <math.h>
 #include <string>
+
+#include "eas.h"
 #include "audio.h"
 
 using namespace std;

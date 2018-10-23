@@ -10,10 +10,9 @@
 
 #include <iostream>
 #include <math.h>
-
-
 #include <sndfile.h>
 #include <vector>
+
 #include "Utils.h"
 #include "eas.h"
 #include "audio.h"
@@ -75,7 +74,7 @@ int main() {
 
     SNDFILE *sf = sf_open(fileName, SFM_WRITE, &info);
     fprintf(stderr, "%s\n", sf_error_number(sf_error(sf)));
-    if( sf_write_double(sf, sound_data->data(), sound_data->size()) != sound_data->size()) {
+    if (sf_write_double(sf, sound_data->data(), sound_data->size()) != sound_data->size()) {
         fprintf(stderr, "%s\n", sf_error_number(sf_error(sf)));
     }
     sf_write_sync(sf);
