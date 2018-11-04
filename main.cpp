@@ -12,6 +12,8 @@
 #include <math.h>
 #include <sndfile.h>
 #include <vector>
+#include <ncurses.h>
+#include <boost/concept_check.hpp>
 
 #include "Utils.h"
 #include "eas.h"
@@ -19,7 +21,87 @@
 
 using namespace std;
 
+template<typename T>
+struct vecvec : public std::vector< std::vector<T> > {};
+
+string getChoice(vector<string> *vector);
+string getChoice(vector<string> *vector, int perLine);
+void getAreas(vector<string> *locations);
+
 int main() {
+    vector<string> originators = {"EAS", "CIV", "WXR", "PIP"};
+
+    string origin  = getChoice(&originators);
+
+    vector<string> nationalEvents = {"EAN", "NIC", "NPT", "RMT", "RWT"};
+
+    vector<string> stateEvents = { "ADR", "AVW", "AVA", "BZW", "BLU", "CAE", "CDW", "CEM", "CFW", "CFA", "DSW", "EQW", "EVI",
+                             "EWW", "FRW", "FFW", "FFA", "FFS", "FLW", "FLA", "FLS", "HMW", "HWW", "HWA", "HUW", "HUA",
+                             "HLS", "LEW", "LAE", "NMN", "TOE", "NUW", "DMO", "RHW", "SVR", "SVA", "SVS", "SPW", "SMW",
+                             "SPS", "SSA", "SSW", "TOR", "TOA", "TRW", "TRA", "TSW", "TSA", "VOW", "WSW", "WSA"};
+    vector<string> events;
+    events.insert(events.end(), nationalEvents.begin(), nationalEvents.end());
+    events.insert(events.end(), stateEvents.begin(), stateEvents.end());
+    string event = getChoice(&events, 6);
+
+    vector<string> lengths = {"00:15", "00:30", "00:45", "01:00", "01:15", "01:30", "01:45", "02:00"};
+    string length = getChoice(&length);
+
+    vector<string> areas;
+    getAreas(&areas);
+
+}
+
+void getRange() {
+
+}
+
+void getAreas(vector<string> *locations) {
+    for (int i = 0; i < 13; i++) {
+        string location;
+        cout << "Enter location: ";
+        cin >> location;
+        if (location == "DONE") {
+            cout << "Done Entering locations.";
+            break;
+        } else {
+            locations->push_back(location);
+        }
+    }
+}
+
+string getChoice(vector<string> *vector) {
+        return getChoice(vector, 1);
+}
+
+string getChoice(vector<string> *vector, int perLine) {
+    int count = 1;
+    for (auto it = vector->begin(); it != vector->end(); it++) {
+        cout << "[" << count << "] " << *it << " ";
+        if (count % perLine == 0) {
+            cout << endl;
+        }
+        count++;
+    }
+
+    bool inputValid = false;
+    unsigned long choice;
+    cout << endl;
+    do {
+        printf("Enter choice: ");
+        cin >> choice;
+        if (choice < 0) {
+            printf("Invalid choice, must be greater than 0.");
+        } else if (choice > vector->size()) {
+            printf("Invalid choice, must be less or equal to %zu.", vector->size());
+        } else {
+            inputValid = true;
+        }
+    } while (!inputValid);
+    return vector->at(choice-1);
+}
+
+void genSample() {
     auto *sound_data = new std::vector<double>;
     auto *bits = new std::vector<bool>();
 
@@ -47,7 +129,7 @@ int main() {
     bits->clear();
 
     //Audio::generate_tone(NRW_WAT_FREQ, (vector<double> &) *sound_data, SAMPLE_RATE * 8);
-    Audio::generate_dual_tone(WAT_FREQ_1, WAT_FREQ_2, (vector<double> &) *sound_data, SAMPLE_RATE * 5);
+    //Audio::generate_dual_tone(WAT_FREQ_1, WAT_FREQ_2, (vector<double> &) *sound_data, SAMPLE_RATE * 5);
     Audio::generate_tone(0, (vector<double> &) *sound_data, SAMPLE_RATE);
 
     Utils::bit_string_to_bit_stream((vector<bool> &) *bits, PREAMBLE);
@@ -62,7 +144,7 @@ int main() {
     Audio::generate_afsk((vector<double> &) *sound_data, (vector<bool> &) *bits);
     Audio::generate_tone(0, (vector<double> &) *sound_data, SAMPLE_RATE);
 
-    struct SF_INFO info{};
+    struct SF_INFO info {};
 
     info.channels = 1;
     info.format = SF_FORMAT_WAV | SF_FORMAT_PCM_32;
