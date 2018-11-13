@@ -45,7 +45,7 @@ int main() {
     string event = getChoice(&events, 6);
 
     vector<string> lengths = {"00:15", "00:30", "00:45", "01:00", "01:15", "01:30", "01:45", "02:00"};
-    string length = getChoice(&length);
+    string length = getChoice(&lengths);
 
     vector<string> areas;
     getAreas(&areas);
