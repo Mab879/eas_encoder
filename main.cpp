@@ -18,6 +18,7 @@
 #include "Utils.h"
 #include "eas.h"
 #include "audio.h"
+#include "alert.cpp"
 
 using namespace std;
 
@@ -27,8 +28,15 @@ struct vecvec : public std::vector< std::vector<T> > {};
 string getChoice(vector<string> *vector);
 string getChoice(vector<string> *vector, int perLine);
 void getAreas(vector<string> *locations);
+int getIntFromUser();
+int getDate();
+int getStartHour();
+int getStartMinute();
+std::string getParticipant();
 
 int main() {
+    auto *a = new alert();
+
     vector<string> originators = {"EAS", "CIV", "WXR", "PIP"};
 
     string origin  = getChoice(&originators);
@@ -44,17 +52,52 @@ int main() {
     events.insert(events.end(), stateEvents.begin(), stateEvents.end());
     string event = getChoice(&events, 6);
 
+    // Lengths
     vector<string> lengths = {"00:15", "00:30", "00:45", "01:00", "01:15", "01:30", "01:45", "02:00"};
     string length = getChoice(&lengths);
 
-    vector<string> areas;
+    // Areas
+    std::vector<std::string> areas;
     getAreas(&areas);
+
+    a->areas = areas;
+    // Get Date Info
+    a->date = getDate();
+    a->hour = getStartHour();
+    a->minute = getStartMinute();
+    std::string part = getParticipant();
+    delete a;
     exit(EXIT_SUCCESS);
 
 }
 
-void getRange() {
+std::string getParticipant() {
+    cout << "Get Participant: ";
+    std::string part;
+    while (TRUE) {
+        cin >> part;
+        if (part.length() != 8) {
+            cout << "Participant must 8 charaters long";
+        }
+        return part;
+    }
+    return part;
+}
 
+int getDate() {
+   cout << "Enter Start Date: ";
+   return getIntFromUser();
+}
+
+int getStartHour() {
+    cout << "Enter Start Hour: ";
+    return getIntFromUser();
+}
+
+
+int getStartMinute() {
+    cout << "Enter the Start Minute: ";
+    return getIntFromUser();
 }
 
 void getAreas(vector<string> *locations) {
@@ -73,6 +116,21 @@ void getAreas(vector<string> *locations) {
 
 string getChoice(vector<string> *vector) {
         return getChoice(vector, 1);
+}
+
+
+int getIntFromUser() {
+    while (TRUE) {
+        string strNumber;
+        cin >> strNumber;
+        int i;
+        try {
+            i = stoi(strNumber);
+        } catch  (std::invalid_argument) {
+            continue;
+        }
+        return i;
+    }
 }
 
 string getChoice(vector<string> *vector, int perLine) {
@@ -102,7 +160,7 @@ string getChoice(vector<string> *vector, int perLine) {
     return vector->at(choice-1);
 }
 
-void genSample() {
+void genSample(alert) {
     auto *sound_data = new std::vector<double>;
     auto *bits = new std::vector<bool>();
 
