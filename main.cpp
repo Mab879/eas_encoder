@@ -14,6 +14,7 @@
 #include <vector>
 #include <ncurses.h>
 #include <boost/concept_check.hpp>
+#include <algorithm>
 
 #include "Utils.h"
 #include "eas.h"
@@ -33,6 +34,7 @@ int getDate();
 int getStartHour();
 int getStartMinute();
 std::string getParticipant();
+void genSample(alert *alert);
 
 int main() {
     auto *a = new alert();
@@ -52,8 +54,8 @@ int main() {
     events.insert(events.end(), stateEvents.begin(), stateEvents.end());
     string event = getChoice(&events, 6);
 
-    // Lengths
-    vector<string> lengths = {"00:15", "00:30", "00:45", "01:00", "01:15", "01:30", "01:45", "02:00"};
+    // Lengths, could be programmatically produced
+    vector<string> lengths = {"0015", "0030", "0045", "0100", "0115", "0130", "0145", "0200", "0215", "2030"};
     string length = getChoice(&lengths);
 
     // Areas
@@ -65,23 +67,23 @@ int main() {
     a->date = getDate();
     a->hour = getStartHour();
     a->minute = getStartMinute();
-    std::string part = getParticipant();
+    a->participant = getParticipant();
+    genSample(a);
     delete a;
     exit(EXIT_SUCCESS);
 
 }
 
 std::string getParticipant() {
-    cout << "Get Participant: ";
+    cout << endl << "Participant: ";
     std::string part;
     while (TRUE) {
         cin >> part;
         if (part.length() != 8) {
-            cout << "Participant must 8 charaters long";
+            cout << "Participant must 8 characters long";
         }
         return part;
     }
-    return part;
 }
 
 int getDate() {
@@ -160,19 +162,33 @@ string getChoice(vector<string> *vector, int perLine) {
     return vector->at(choice-1);
 }
 
-void genSample(alert) {
+void genSample(alert *alert) {
     auto *sound_data = new std::vector<double>;
     auto *bits = new std::vector<bool>();
 
     Utils::bit_string_to_bit_stream((vector<bool> &) *bits, PREAMBLE);
     Utils::string_to_bit_stream((vector<bool> &) *bits, HEADER);
-    Utils::string_to_bit_stream((vector<bool> &) *bits, "-WXR");
-    Utils::string_to_bit_stream((vector<bool> &) *bits, "-TOR");
-    Utils::string_to_bit_stream((vector<bool> &) *bits, "-019169");
-    Utils::string_to_bit_stream((vector<bool> &) *bits, "-019153");
-    Utils::string_to_bit_stream((vector<bool> &) *bits, "+0045");
-    Utils::string_to_bit_stream((vector<bool> &) *bits, "-2941320");
-    Utils::string_to_bit_stream((vector<bool> &) *bits, "-KDSM/NWS-");
+    Utils::string_to_bit_stream((vector<bool> &) *bits, "-");
+    Utils::string_to_bit_stream((vector<bool> &) *bits, alert->origin);
+    Utils::string_to_bit_stream((vector<bool> &) *bits, "-");
+    Utils::string_to_bit_stream((vector<bool> &) *bits, alert->event);
+
+
+    for (auto locationsIter = alert->areas.begin(); locationsIter < alert->areas.end(); locationsIter++) {
+        Utils::string_to_bit_stream((vector<bool> &) *bits, "-");
+        Utils::string_to_bit_stream((vector<bool> &) *bits, *locationsIter);
+
+    }
+    Utils::string_to_bit_stream((vector<bool> &) *bits, "-+");
+    Utils::string_to_bit_stream((vector<bool> &) *bits, alert->length);
+    Utils::string_to_bit_stream((vector<bool> &) *bits, "-");
+
+    Utils::string_to_bit_stream((vector<bool> &) *bits,  std::to_string(alert->date));
+    Utils::string_to_bit_stream((vector<bool> &) *bits, std::to_string(alert->hour));
+    Utils::string_to_bit_stream((vector<bool> &) *bits, std::to_string(alert->minute));
+    Utils::string_to_bit_stream((vector<bool> &) *bits, "-");
+    Utils::string_to_bit_stream((vector<bool> &) *bits, alert->participant);
+    Utils::string_to_bit_stream((vector<bool> &) *bits, "-");
 
     Audio::generate_tone(0, (vector<double> &) *sound_data, SAMPLE_RATE);
 

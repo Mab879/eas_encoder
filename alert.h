@@ -17,6 +17,7 @@ public:
     int date;
     int hour;
     int minute;
+    std::string participant;
 };
 
 
