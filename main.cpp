@@ -49,6 +49,7 @@ int main() {
 
     vector<string> areas;
     getAreas(&areas);
+    exit(EXIT_SUCCESS);
 
 }
 
