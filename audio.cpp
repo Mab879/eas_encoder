@@ -52,3 +52,8 @@ void Audio::generate_afsk(std::vector<double> &vector, std::vector<bool> &messag
         }
     }
 }
+
+
+void Audio::generate_silence(std::vector<double> &vector, long length) {
+    generate_tone(0, vector, length);
+}
