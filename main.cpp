@@ -35,8 +35,22 @@ int getStartHour();
 int getStartMinute();
 std::string getParticipant();
 void genSample(alert *alert);
+WATs getWat();
+void create_header(const alert *alert, string &header);
+
+void create_wat(const alert *alert, const vector<double> *sound_data);
+
+void create_wav(vector<double> *sound_data, const std::string &filename);
 
 int main() {
+    auto *bits = new std::vector<bool>();
+   Utils::string_to_bit_stream((vector<bool> &) *bits, "a");
+   for (auto i = bits->begin(); i < bits->end(); i++) {
+       cout << *i;
+   }
+   cout << endl;
+
+
     auto *a = new alert();
 
     vector<string> originators = {"EAS", "CIV", "WXR", "PIP"};
@@ -62,20 +76,35 @@ int main() {
     std::vector<std::string> areas;
     getAreas(&areas);
 
+    a->length = length;
+    a->origin = origin;
+    a->event = event;
     a->areas = areas;
     // Get Date Info
     a->date = getDate();
     a->hour = getStartHour();
     a->minute = getStartMinute();
     a->participant = getParticipant();
+    a->wat = getWat();
     genSample(a);
     delete a;
     exit(EXIT_SUCCESS);
 
 }
 
+WATs getWat() {
+    vector<string> wats = { "NRW", "Normal"};
+    string choice = getChoice(&wats);
+    if (choice == wats[0]) {
+        return NRW_WAT;
+    } else {
+        return NORMAL_WAT;
+    }
+
+}
+
 std::string getParticipant() {
-    cout << endl << "Participant: ";
+    cout << "Participant: ";
     std::string part;
     while (TRUE) {
         cin >> part;
@@ -108,7 +137,7 @@ void getAreas(vector<string> *locations) {
         cout << "Enter location: ";
         cin >> location;
         if (location == "DONE") {
-            cout << "Done Entering locations.";
+            cout << "Done Entering locations." << endl;
             break;
         } else {
             locations->push_back(location);
@@ -137,8 +166,8 @@ int getIntFromUser() {
 
 string getChoice(vector<string> *vector, int perLine) {
     int count = 1;
-    for (auto it = vector->begin(); it != vector->end(); it++) {
-        cout << "[" << count << "] " << *it << " ";
+    for (auto &it : *vector) {
+        cout << "[" << count << "] " << it << " ";
         if (count % perLine == 0) {
             cout << endl;
         }
@@ -166,59 +195,40 @@ void genSample(alert *alert) {
     auto *sound_data = new std::vector<double>;
     auto *bits = new std::vector<bool>();
 
+    std::string header;
+    create_header(alert, header);
+
     Utils::bit_string_to_bit_stream((vector<bool> &) *bits, PREAMBLE);
-    Utils::string_to_bit_stream((vector<bool> &) *bits, HEADER);
-    Utils::string_to_bit_stream((vector<bool> &) *bits, "-");
-    Utils::string_to_bit_stream((vector<bool> &) *bits, alert->origin);
-    Utils::string_to_bit_stream((vector<bool> &) *bits, "-");
-    Utils::string_to_bit_stream((vector<bool> &) *bits, alert->event);
+    Utils::string_to_bit_stream((vector<bool> &) *bits, header);
 
+    Audio::generate_silence((vector<double> &) *sound_data, SAMPLE_RATE);
 
-    for (auto locationsIter = alert->areas.begin(); locationsIter < alert->areas.end(); locationsIter++) {
-        Utils::string_to_bit_stream((vector<bool> &) *bits, "-");
-        Utils::string_to_bit_stream((vector<bool> &) *bits, *locationsIter);
-
+    for (int i = 0; i < 3; i++) {
+        Audio::generate_afsk((vector<double> &) *sound_data, (vector<bool> &) *bits);
+        Audio::generate_silence((vector<double> &) *sound_data, SAMPLE_RATE);
     }
-    Utils::string_to_bit_stream((vector<bool> &) *bits, "-+");
-    Utils::string_to_bit_stream((vector<bool> &) *bits, alert->length);
-    Utils::string_to_bit_stream((vector<bool> &) *bits, "-");
-
-    Utils::string_to_bit_stream((vector<bool> &) *bits,  std::to_string(alert->date));
-    Utils::string_to_bit_stream((vector<bool> &) *bits, std::to_string(alert->hour));
-    Utils::string_to_bit_stream((vector<bool> &) *bits, std::to_string(alert->minute));
-    Utils::string_to_bit_stream((vector<bool> &) *bits, "-");
-    Utils::string_to_bit_stream((vector<bool> &) *bits, alert->participant);
-    Utils::string_to_bit_stream((vector<bool> &) *bits, "-");
-
-    Audio::generate_tone(0, (vector<double> &) *sound_data, SAMPLE_RATE);
-
-    Audio::generate_afsk((vector<double> &) *sound_data, (vector<bool> &) *bits);
-    Audio::generate_tone(0, (vector<double> &) *sound_data, SAMPLE_RATE);
-
-    Audio::generate_afsk((vector<double> &) *sound_data, (vector<bool> &) *bits);
-    Audio::generate_tone(0, (vector<double> &) *sound_data, SAMPLE_RATE);
-
-    Audio::generate_afsk((vector<double> &) *sound_data, (vector<bool> &) *bits);
-    Audio::generate_tone(0, (vector<double> &) *sound_data, SAMPLE_RATE);
 
     bits->clear();
 
-    //Audio::generate_tone(NRW_WAT_FREQ, (vector<double> &) *sound_data, SAMPLE_RATE * 8);
-    //Audio::generate_dual_tone(WAT_FREQ_1, WAT_FREQ_2, (vector<double> &) *sound_data, SAMPLE_RATE * 5);
-    Audio::generate_tone(0, (vector<double> &) *sound_data, SAMPLE_RATE);
+    create_wat(alert, sound_data);
+
+    Audio::generate_silence((vector<double> &) *sound_data, SAMPLE_RATE);
 
     Utils::bit_string_to_bit_stream((vector<bool> &) *bits, PREAMBLE);
     Utils::string_to_bit_stream((vector<bool> &) *bits, EOM);
 
-    Audio::generate_afsk((vector<double> &) *sound_data, (vector<bool> &) *bits);
-    Audio::generate_tone(0, (vector<double> &) *sound_data, SAMPLE_RATE);
+    for (int i = 0; i < 3; i++) {
+        Audio::generate_afsk((vector<double> &) *sound_data, (vector<bool> &) *bits);
+        Audio::generate_silence((vector<double> &) *sound_data, SAMPLE_RATE);
+    }
 
-    Audio::generate_afsk((vector<double> &) *sound_data, (vector<bool> &) *bits);
-    Audio::generate_tone(0, (vector<double> &) *sound_data, SAMPLE_RATE);
+    create_wav(sound_data, "eas_tone.wav");
 
-    Audio::generate_afsk((vector<double> &) *sound_data, (vector<bool> &) *bits);
-    Audio::generate_tone(0, (vector<double> &) *sound_data, SAMPLE_RATE);
+    delete bits;
+    delete sound_data;
+}
 
+void create_wav(vector<double> *sound_data, const std::string &fileName) {
     struct SF_INFO info {};
 
     info.channels = 1;
@@ -227,17 +237,42 @@ void genSample(alert *alert) {
     info.sections = 1;
     info.seekable = 1;
 
-    const char *fileName = "eas_ean.wav";
-
-    SNDFILE *sf = sf_open(fileName, SFM_WRITE, &info);
+    SNDFILE *sf = sf_open(fileName.c_str(), SFM_WRITE, &info);
     fprintf(stderr, "%s\n", sf_error_number(sf_error(sf)));
     if (sf_write_double(sf, sound_data->data(), sound_data->size()) != sound_data->size()) {
         fprintf(stderr, "%s\n", sf_error_number(sf_error(sf)));
     }
     sf_write_sync(sf);
     sf_close(sf);
+}
 
-    delete bits;
-    delete sound_data;
+void create_wat(const alert *alert, const vector<double> *sound_data) {
+    if (alert->wat == NRW_WAT) {
+        Audio::generate_tone(NRW_WAT_FREQ, (vector<double> &) *sound_data, SAMPLE_RATE * 8);
+    } else {
+        Audio::generate_dual_tone(WAT_FREQ_1, WAT_FREQ_2, (vector<double> &) *sound_data, SAMPLE_RATE * 5);
+    }
+}
+
+void create_header(const alert *alert, string &header) {
+    header.append(HEADER);
+    header.push_back('-');
+    header.append(alert->origin);
+    header.push_back('-');
+    header.append(alert->event);
+    for (auto locationsIter = alert->areas.begin(); locationsIter < alert->areas.end(); locationsIter++) {
+        header.push_back('-');
+        header.append(*locationsIter);
+
+    }
+    header.push_back('-');
+    header.append(alert->length);
+    header.push_back('-');
+    header.append(to_string(alert->date));
+    header.append(to_string(alert->hour));
+    header.append(to_string(alert->minute));
+    header.push_back('-');
+    header.append(alert->participant);
+    header.push_back('-');
 }
 
