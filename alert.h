@@ -18,6 +18,7 @@ public:
     int hour;
     int minute;
     std::string participant;
+    WATs wat;
 };
 
 
