@@ -12,6 +12,9 @@
 #include <vector>
 #include <bitset>
 #include <stdexcept>
+#include <iostream>
+#include <typeinfo>
+#include <sstream>
 
 #include "Utils.h"
 #include "audio.h"
@@ -22,10 +25,9 @@
 void Utils::string_to_bit_stream(std::vector<bool> &vector, std::string message) {
     for (std::size_t i = 0; i < message.size(); i++) {
         auto bitstring = std::bitset<8>(message.c_str()[i]);
-
-        for (int j = 0; j < bitstring.size(); j++) {
-            vector.push_back(bitstring[j]);
-        }
+        std::stringstream input;
+        input << bitstring;
+        Utils::bit_string_to_bit_stream(vector, input.str());
     }
 }
 
