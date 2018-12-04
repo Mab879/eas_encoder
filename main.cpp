@@ -17,37 +17,57 @@
 #include "eas.h"
 #include "audio.h"
 #include "alert.cpp"
+#include "UI.h"
 
 #define TRUE 1
 
 using namespace std;
 
-string getChoice(vector<string> *vector);
-string getChoice(vector<string> *vector, int perLine);
 void getAreas(vector<string> *locations);
-int getIntFromUser();
 int getDate();
 int getStartHour();
 int getStartMinute();
 std::string getParticipant();
-void genSample(alert *alert);
 WATs getWat();
+string getOrigin();
+string getEvent();
+string getLength();
 
 int main() {
-    auto *bits = new std::vector<bool>();
-   Utils::string_to_bit_stream((vector<bool> &) *bits, "a");
-   for (auto i = bits->begin(); i < bits->end(); i++) {
-       cout << *i;
-   }
-   cout << endl;
-
-
     auto *a = new alert();
 
-    vector<string> originators = {"EAS", "CIV", "WXR", "PIP"};
+    a->origin = getOrigin();
 
-    string origin  = getChoice(&originators);
+    a->event = getEvent();
 
+    // Lengths, could be programmatically produced
+    a->length = getLength();
+
+    // Areas
+    std::vector<std::string> areas;
+    getAreas(&areas);
+    a->areas = areas;
+
+    // Get Date Info
+    a->date = getDate();
+    a->hour = getStartHour();
+    a->minute = getStartMinute();
+    a->participant = getParticipant();
+    a->wat = getWat();
+
+    a->create_alert("eas_alert_1.wav");
+    delete a;
+    exit(EXIT_SUCCESS);
+
+}
+
+string getLength() {
+    vector<string> lengths = {"0015", "0030", "0045", "0100", "0115", "0130", "0145", "0200", "0215", "2030"};
+    string length = UI::getChoice(&lengths);
+    return length;
+}
+
+string getEvent() {
     vector<string> nationalEvents = {"EAN", "NIC", "NPT", "RMT", "RWT"};
 
     vector<string> stateEvents = { "ADR", "AVW", "AVA", "BZW", "BLU", "CAE", "CDW", "CEM", "CFW", "CFA", "DSW", "EQW", "EVI",
@@ -57,35 +77,20 @@ int main() {
     vector<string> events;
     events.insert(events.end(), nationalEvents.begin(), nationalEvents.end());
     events.insert(events.end(), stateEvents.begin(), stateEvents.end());
-    string event = getChoice(&events, 6);
+    string event = UI::getChoice(&events, 6);
+    return event;
+}
 
-    // Lengths, could be programmatically produced
-    vector<string> lengths = {"0015", "0030", "0045", "0100", "0115", "0130", "0145", "0200", "0215", "2030"};
-    string length = getChoice(&lengths);
+string getOrigin() {
+    vector<string> originators = {"EAS", "CIV", "WXR", "PEP"};
 
-    // Areas
-    std::vector<std::string> areas;
-    getAreas(&areas);
-
-    a->length = length;
-    a->origin = origin;
-    a->event = event;
-    a->areas = areas;
-    // Get Date Info
-    a->date = getDate();
-    a->hour = getStartHour();
-    a->minute = getStartMinute();
-    a->participant = getParticipant();
-    a->wat = getWat();
-    genSample(a);
-    delete a;
-    exit(EXIT_SUCCESS);
-
+    string origin  = UI::getChoice(&originators);
+    return origin;
 }
 
 WATs getWat() {
-    vector<string> wats = { "NRW", "Normal"};
-    string choice = getChoice(&wats);
+    vector<string> wats = { "NRW", "Normal" };
+    string choice = UI::getChoice(&wats);
     if (choice == wats[0]) {
         return NRW_WAT;
     } else {
@@ -108,22 +113,22 @@ std::string getParticipant() {
 
 int getDate() {
    cout << "Enter Start Date: ";
-   return getIntFromUser();
+   return UI::getIntFromUser();
 }
 
 int getStartHour() {
     cout << "Enter Start Hour: ";
-    return getIntFromUser();
+    return UI::getIntFromUser();
 }
 
 
 int getStartMinute() {
     cout << "Enter the Start Minute: ";
-    return getIntFromUser();
+    return UI::getIntFromUser();
 }
 
 void getAreas(vector<string> *locations) {
-    for (int i = 0; i < 13; i++) {
+    for (int i = 0; i < 31; i++) {
         string location;
         cout << "Enter location: ";
         cin >> location;
@@ -131,90 +136,7 @@ void getAreas(vector<string> *locations) {
             cout << "Done Entering locations." << endl;
             break;
         } else {
-            locations->push_back(location);
+            locations->push_back(Utils::zero_pad_int(location, 6));
         }
     }
-}
-
-string getChoice(vector<string> *vector) {
-        return getChoice(vector, 1);
-}
-
-
-int getIntFromUser() {
-    while (TRUE) {
-        string strNumber;
-        cin >> strNumber;
-        int i;
-        try {
-            i = stoi(strNumber);
-        } catch  (std::invalid_argument) {
-            continue;
-        }
-        return i;
-    }
-}
-
-string getChoice(vector<string> *vector, int perLine) {
-    int count = 1;
-    for (auto &it : *vector) {
-        cout << "[" << count << "] " << it << " ";
-        if (count % perLine == 0) {
-            cout << endl;
-        }
-        count++;
-    }
-
-    bool inputValid = false;
-    unsigned long choice;
-    cout << endl;
-    do {
-        printf("Enter choice: ");
-        cin >> choice;
-        if (choice < 0) {
-            printf("Invalid choice, must be greater than 0.");
-        } else if (choice > vector->size()) {
-            printf("Invalid choice, must be less or equal to %zu.", vector->size());
-        } else {
-            inputValid = true;
-        }
-    } while (!inputValid);
-    return vector->at(choice-1);
-}
-
-void genSample(alert *alert) {
-    auto *sound_data = new std::vector<double>;
-    auto *bits = new std::vector<bool>();
-
-    std::string header;
-    EAS::create_header(alert, header);
-
-    Utils::bit_string_to_bit_stream((vector<bool> &) *bits, PREAMBLE);
-    Utils::string_to_bit_stream((vector<bool> &) *bits, header);
-
-    Audio::generate_silence((vector<double> &) *sound_data, SAMPLE_RATE);
-
-    for (int i = 0; i < 3; i++) {
-        Audio::generate_afsk((vector<double> &) *sound_data, (vector<bool> &) *bits);
-        Audio::generate_silence((vector<double> &) *sound_data, SAMPLE_RATE);
-    }
-
-    bits->clear();
-
-    EAS::create_wat(alert, sound_data);
-
-    Audio::generate_silence((vector<double> &) *sound_data, SAMPLE_RATE);
-
-    Utils::bit_string_to_bit_stream((vector<bool> &) *bits, PREAMBLE);
-    Utils::string_to_bit_stream((vector<bool> &) *bits, EOM);
-
-    for (int i = 0; i < 3; i++) {
-        Audio::generate_afsk((vector<double> &) *sound_data, (vector<bool> &) *bits);
-        Audio::generate_silence((vector<double> &) *sound_data, SAMPLE_RATE);
-    }
-
-    Audio::create_wav(sound_data, "eas_tone.wav");
-
-    delete bits;
-    delete sound_data;
 }

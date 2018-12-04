@@ -33,7 +33,6 @@ void EAS::create_header(const alert *alert, std::string &header) {
     header.push_back('-');
     header.append(alert->participant);
     header.push_back('-');
-   std::cout << header;
 }
 
 void EAS::create_wat(const alert *alert, const std::vector<double> *sound_data) {

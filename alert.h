@@ -23,6 +23,10 @@ public:
     int minute;
     std::string participant;
     WATs wat;
+    void create_alert(std::string filename);
+
+private:
+    void create_eom(const std::vector<double> *sound_data, const std::vector<bool> *bits) const;
 };
 
 

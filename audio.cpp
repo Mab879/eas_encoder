@@ -11,6 +11,7 @@
 #include <math.h>
 #include <string>
 #include <sndfile.h>
+#include <iostream>
 
 #include "eas.h"
 #include "audio.h"
@@ -69,9 +70,10 @@ void Audio::create_wav(vector<double> *sound_data, const std::string &fileName) 
     info.seekable = 1;
 
     SNDFILE *sf = sf_open(fileName.c_str(), SFM_WRITE, &info);
-    fprintf(stderr, "%s\n", sf_error_number(sf_error(sf)));
     if (sf_write_double(sf, sound_data->data(), sound_data->size()) != sound_data->size()) {
         fprintf(stderr, "%s\n", sf_error_number(sf_error(sf)));
+    } else {
+        std::cout << "Wrote EAS alert to";
     }
     sf_write_sync(sf);
     sf_close(sf);

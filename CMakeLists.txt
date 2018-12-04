@@ -5,4 +5,4 @@ set(CMAKE_CXX_STANDARD 17)
 
 link_libraries(sndfile)
 
-add_executable(sameEncoder main.cpp audio.cpp audio.h eas.h eas.cpp Utils.cpp Utils.h)
+add_executable(sameEncoder main.cpp audio.cpp audio.h eas.h eas.cpp Utils.cpp Utils.h UI.cpp UI.h)

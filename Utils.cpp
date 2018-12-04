@@ -55,3 +55,7 @@ std::string Utils::zero_pad_int(int num, int totalLength) {
     std::string old_string = std::to_string(num);
     return std::string(totalLength - old_string.length(), '0') + old_string;
 }
+
+std::string Utils::zero_pad_int(const std::string &old_string, int totalLength) {
+    return std::string(totalLength - old_string.length(), '0') + old_string;
+}
