@@ -10,6 +10,7 @@
 
 #include <math.h>
 #include <string>
+#include <sndfile.h>
 
 #include "eas.h"
 #include "audio.h"
@@ -56,4 +57,22 @@ void Audio::generate_afsk(std::vector<double> &vector, std::vector<bool> &messag
 
 void Audio::generate_silence(std::vector<double> &vector, long length) {
     generate_tone(0, vector, length);
+}
+
+void Audio::create_wav(vector<double> *sound_data, const std::string &fileName) {
+    struct SF_INFO info {};
+
+    info.channels = 1;
+    info.format = SF_FORMAT_WAV | SF_FORMAT_PCM_32;
+    info.samplerate = SAMPLE_RATE;
+    info.sections = 1;
+    info.seekable = 1;
+
+    SNDFILE *sf = sf_open(fileName.c_str(), SFM_WRITE, &info);
+    fprintf(stderr, "%s\n", sf_error_number(sf_error(sf)));
+    if (sf_write_double(sf, sound_data->data(), sound_data->size()) != sound_data->size()) {
+        fprintf(stderr, "%s\n", sf_error_number(sf_error(sf)));
+    }
+    sf_write_sync(sf);
+    sf_close(sf);
 }

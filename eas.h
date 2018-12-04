@@ -11,6 +11,8 @@
 #ifndef SAMEENCODER_EAS_H
 #define SAMEENCODER_EAS_H
 
+#include "alert.h"
+
 #define DATA_RATE 520.83
 #define SPACE_FREQ 1562.5
 #define MARK_FREQ 2083.3
@@ -22,9 +24,13 @@
 #define HEADER "ZCZC"
 #define PREAMBLE "10101011101010111010101110101011101010111010101110101011101010111010101110101011101010111010101110101011101010111010101110101011"
 
-enum WATs {
-    NORMAL_WAT, NRW_WAT
+
+class EAS {
+public:
+    static void create_header(const alert *alert, std::string &header);
+    static void create_wat(const alert *alert, const std::vector<double> *sound_data);
 };
+
 
 
 #endif //SAMEENCODER_EAS_H

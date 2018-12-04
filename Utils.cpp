@@ -47,3 +47,11 @@ void Utils::bit_string_to_bit_stream(std::vector<bool> &vector, std::string bits
     }
 }
 
+/// https://stackoverflow.com/a/26343947
+/// \param num number to convert
+/// \param totalLength total length at the end
+/// \return
+std::string Utils::zero_pad_int(int num, int totalLength) {
+    std::string old_string = std::to_string(num);
+    return std::string(totalLength - old_string.length(), '0') + old_string;
+}

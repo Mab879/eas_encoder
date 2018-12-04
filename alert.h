@@ -8,6 +8,10 @@
 #include <vector>
 #include <string>
 
+enum WATs {
+    NORMAL_WAT, NRW_WAT
+};
+
 class alert {
 public:
     std::string origin;

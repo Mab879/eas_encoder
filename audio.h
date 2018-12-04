@@ -12,11 +12,13 @@
 #define SAMEENCODER_AUDIO_H
 #include <vector>
 
+
 class Audio {
 public:
     static void generate_tone(double freq, std::vector<double> &vector, long length);
     static void generate_afsk(std::vector<double> &vector, std::vector<bool> &message);
     static void generate_dual_tone(double freq1, double freq2, std::vector<double> &vector, long length);
     static void generate_silence(std::vector<double> &vector, long length);
+    static void create_wav(std::vector<double> *sound_data, const std::string &fileName);
 };
 #endif //SAMEENCODER_AUDIO_H

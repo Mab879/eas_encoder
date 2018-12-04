@@ -10,10 +10,7 @@
 
 #include <iostream>
 #include <math.h>
-#include <sndfile.h>
 #include <vector>
-#include <ncurses.h>
-#include <boost/concept_check.hpp>
 #include <algorithm>
 
 #include "Utils.h"
@@ -21,10 +18,9 @@
 #include "audio.h"
 #include "alert.cpp"
 
-using namespace std;
+#define TRUE 1
 
-template<typename T>
-struct vecvec : public std::vector< std::vector<T> > {};
+using namespace std;
 
 string getChoice(vector<string> *vector);
 string getChoice(vector<string> *vector, int perLine);
@@ -36,11 +32,6 @@ int getStartMinute();
 std::string getParticipant();
 void genSample(alert *alert);
 WATs getWat();
-void create_header(const alert *alert, string &header);
-
-void create_wat(const alert *alert, const vector<double> *sound_data);
-
-void create_wav(vector<double> *sound_data, const std::string &filename);
 
 int main() {
     auto *bits = new std::vector<bool>();
@@ -196,7 +187,7 @@ void genSample(alert *alert) {
     auto *bits = new std::vector<bool>();
 
     std::string header;
-    create_header(alert, header);
+    EAS::create_header(alert, header);
 
     Utils::bit_string_to_bit_stream((vector<bool> &) *bits, PREAMBLE);
     Utils::string_to_bit_stream((vector<bool> &) *bits, header);
@@ -210,7 +201,7 @@ void genSample(alert *alert) {
 
     bits->clear();
 
-    create_wat(alert, sound_data);
+    EAS::create_wat(alert, sound_data);
 
     Audio::generate_silence((vector<double> &) *sound_data, SAMPLE_RATE);
 
@@ -222,57 +213,8 @@ void genSample(alert *alert) {
         Audio::generate_silence((vector<double> &) *sound_data, SAMPLE_RATE);
     }
 
-    create_wav(sound_data, "eas_tone.wav");
+    Audio::create_wav(sound_data, "eas_tone.wav");
 
     delete bits;
     delete sound_data;
 }
-
-void create_wav(vector<double> *sound_data, const std::string &fileName) {
-    struct SF_INFO info {};
-
-    info.channels = 1;
-    info.format = SF_FORMAT_WAV | SF_FORMAT_PCM_32;
-    info.samplerate = SAMPLE_RATE;
-    info.sections = 1;
-    info.seekable = 1;
-
-    SNDFILE *sf = sf_open(fileName.c_str(), SFM_WRITE, &info);
-    fprintf(stderr, "%s\n", sf_error_number(sf_error(sf)));
-    if (sf_write_double(sf, sound_data->data(), sound_data->size()) != sound_data->size()) {
-        fprintf(stderr, "%s\n", sf_error_number(sf_error(sf)));
-    }
-    sf_write_sync(sf);
-    sf_close(sf);
-}
-
-void create_wat(const alert *alert, const vector<double> *sound_data) {
-    if (alert->wat == NRW_WAT) {
-        Audio::generate_tone(NRW_WAT_FREQ, (vector<double> &) *sound_data, SAMPLE_RATE * 8);
-    } else {
-        Audio::generate_dual_tone(WAT_FREQ_1, WAT_FREQ_2, (vector<double> &) *sound_data, SAMPLE_RATE * 5);
-    }
-}
-
-void create_header(const alert *alert, string &header) {
-    header.append(HEADER);
-    header.push_back('-');
-    header.append(alert->origin);
-    header.push_back('-');
-    header.append(alert->event);
-    for (auto locationsIter = alert->areas.begin(); locationsIter < alert->areas.end(); locationsIter++) {
-        header.push_back('-');
-        header.append(*locationsIter);
-
-    }
-    header.push_back('-');
-    header.append(alert->length);
-    header.push_back('-');
-    header.append(to_string(alert->date));
-    header.append(to_string(alert->hour));
-    header.append(to_string(alert->minute));
-    header.push_back('-');
-    header.append(alert->participant);
-    header.push_back('-');
-}
-
