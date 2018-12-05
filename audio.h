@@ -13,6 +13,9 @@
 #include <vector>
 
 
+/**
+ * This class contains audio related helper functions.
+ */
 class Audio {
 public:
     static void generate_tone(double freq, std::vector<double> &vector, long length);

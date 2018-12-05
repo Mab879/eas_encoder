@@ -78,7 +78,7 @@ void Audio::create_wav(vector<double> *sound_data, const std::string &fileName) 
     if (sf_write_double(sf, sound_data->data(), sound_data->size()) != sound_data->size()) {
         fprintf(stderr, "%s\n", sf_error_number(sf_error(sf)));
     } else {
-        std::cout << "Wrote EAS alert to";
+        std::cout << "Wrote EAS Alert to";
     }
     sf_write_sync(sf);
     sf_close(sf);

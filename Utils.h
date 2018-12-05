@@ -14,6 +14,9 @@
 #include <vector>
 #include <string>
 
+/**
+ * This class has various helper methods
+ */
 class Utils {
 public:
     static void string_to_bit_stream(std::vector<bool> &vector, std::string message);

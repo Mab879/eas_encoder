@@ -16,7 +16,7 @@
 #include "Utils.h"
 #include "eas.h"
 #include "audio.h"
-#include "alert.cpp"
+#include "Alert.cpp"
 #include "UI.h"
 
 #define TRUE 1
@@ -28,13 +28,13 @@ int getDate();
 int getStartHour();
 int getStartMinute();
 std::string getParticipant();
-WATs getWat();
+Alert::WATs getWat();
 string getOrigin();
 string getEvent();
 string getLength();
 
 int main() {
-    auto *a = new alert();
+    auto *a = new Alert();
 
     a->origin = getOrigin();
 
@@ -88,14 +88,14 @@ string getOrigin() {
     return origin;
 }
 
-WATs getWat() {
+Alert::WATs getWat() {
     cout << "Select the Attention Tone";
     vector<string> wats = { "NRW", "Normal" };
     string choice = UI::getChoice(&wats);
     if (choice == wats[0]) {
-        return NRW_WAT;
+        return Alert::NRW_WAT;
     } else {
-        return NORMAL_WAT;
+        return Alert::NORMAL_WAT;
     }
 
 }

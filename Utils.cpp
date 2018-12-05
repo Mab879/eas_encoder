@@ -8,11 +8,6 @@
  * of the License, or (at your option) any later version.
  */
 
-/**
- * @file Utils.cpp
- * @author Matthew Burket
- */
-
 #include <string>
 #include <vector>
 #include <bitset>

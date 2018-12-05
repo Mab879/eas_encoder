@@ -1,19 +1,27 @@
-//
-// Created by mburket on 12/1/18.
-//
+/* This file is a part of EAS Encoder.
+ *
+ * Copyright (C) 2018 Matthew Burket
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 3
+ * of the License, or (at your option) any later version.
+ */
 
-#include "alert.h"
+#include "Alert.h"
 #include "eas.h"
 #include "audio.h"
 #include "Utils.h"
 
+
+
 /// Given a file name will create an WAV of EAS tone from this alert
 /// \param filename filename to save the WAV as
-void alert::create_alert(std::string filename) {
+void Alert::create_alert(std::string filename) {
     auto *sound_data = new std::vector<double>;
     std::string header = create_header_string();
     create_header_tones(sound_data, header);
-    EAS::create_wat(this, sound_data);
+    create_wat(sound_data);
     Audio::generate_silence((std::vector<double> &) *sound_data, SAMPLE_RATE);
     create_eom_tones(sound_data);
     Audio::create_wav(sound_data, filename);
@@ -22,7 +30,7 @@ void alert::create_alert(std::string filename) {
 
 /// Creates EAS header string
 /// \return header of this alert
-std::string alert::create_header_string() {
+std::string Alert::create_header_string() {
     std::string header;
     header.append(HEADER);
     header.push_back('-');
@@ -50,7 +58,7 @@ std::string alert::create_header_string() {
 /// \param sound_data the
 /// \param bits
 /// \param header
-void alert::create_header_tones(const std::vector<double> *sound_data, const std::string &header) const {
+void Alert::create_header_tones(const std::vector<double> *sound_data, const std::string &header) const {
     auto *bits = new std::vector<bool>();
     Utils::bit_string_to_bit_stream((std::vector<bool> &) *bits, PREAMBLE);
     Utils::string_to_bit_stream((std::vector<bool> &) *bits, header);
@@ -66,7 +74,7 @@ void alert::create_header_tones(const std::vector<double> *sound_data, const std
 /// Creates the end of message tones
 /// \param sound_data
 /// \param bits
-void alert::create_eom_tones(const std::vector<double> *sound_data) const {
+void Alert::create_eom_tones(const std::vector<double> *sound_data) const {
     auto *bits = new std::vector<bool>();
     Utils::bit_string_to_bit_stream((std::vector<bool> &) *bits, PREAMBLE);
     Utils::string_to_bit_stream((std::vector<bool> &) *bits, EOM);
@@ -74,5 +82,15 @@ void alert::create_eom_tones(const std::vector<double> *sound_data) const {
     for (int i = 0; i < 3; i++) {
         Audio::generate_afsk((std::vector<double> &) *sound_data, (std::vector<bool> &) *bits);
         Audio::generate_silence((std::vector<double> &) *sound_data, SAMPLE_RATE);
+    }
+}
+
+/// Create the attention based on the
+/// \param sound_data
+void Alert::create_wat(const std::vector<double> *sound_data) {
+    if (this->wat == NRW_WAT) {
+        Audio::generate_tone(NRW_WAT_FREQ, (std::vector<double> &) *sound_data, SAMPLE_RATE * 8);
+    } else {
+        Audio::generate_dual_tone(WAT_FREQ_1, WAT_FREQ_2, (std::vector<double> &) *sound_data, SAMPLE_RATE * 5);
     }
 }
