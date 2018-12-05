@@ -35,7 +35,7 @@ std::string UI::getChoice(std::vector<std::string> *vector, int perLine) {
         count++;
     }
 
-    std::cout << std::endl;
+    std::cout << "Enter your choice: ";
     unsigned long choice = getIntFromUser(1, vector->size());
     return vector->at(choice-1);
 }
@@ -64,9 +64,9 @@ unsigned long UI::getIntFromUser(unsigned long low, unsigned long high) {
     while (true) {
         unsigned long userInt = getIntFromUser();
         if (userInt < low) {
-            std::cout << "You must enter a integer greater than or equal to " << low << std::endl;
+            std::cout << "You must enter a integer greater than or equal to " << low << ". Please Try again: ";
         } else if (userInt > high) {
-            std::cout << "You must enter a integer less than or equal to " << high << std::endl;
+            std::cout << "You must enter a integer less than or equal to " << high << ". Please Try again:";
         } else {
             return userInt;
         }

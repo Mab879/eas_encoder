@@ -21,17 +21,15 @@
 
 #define TRUE 1
 
-using namespace std;
-
-void getAreas(vector<string> *locations);
+void getAreas(std::vector<std::string> *locations);
 int getDate();
 int getStartHour();
 int getStartMinute();
 std::string getParticipant();
 Alert::WATs getWat();
-string getOrigin();
-string getEvent();
-string getLength();
+std::string getOrigin();
+std::string getEvent();
+std::string getLength();
 
 int main() {
     auto *a = new Alert();
@@ -55,43 +53,48 @@ int main() {
     a->participant = getParticipant();
     a->wat = getWat();
 
-    a->create_alert("eas_alert_1.wav");
+    std::cout << "Enter file name, should end with .wav: ";
+    std::string filename;
+    std::cin >> filename;
+
+    a->create_alert(filename);
     delete a;
     exit(EXIT_SUCCESS);
 
 }
 
-string getLength() {
-    vector<string> lengths = {"0015", "0030", "0045", "0100", "0115", "0130", "0145", "0200", "0215", "2030"};
-    string length = UI::getChoice(&lengths);
+std::string getLength() {
+    std::vector<std::string> lengths = {"0015", "0030", "0045", "0100", "0115", "0130", "0145", "0200", "0215", "2030"};
+    std::string length = UI::getChoice(&lengths);
     return length;
 }
 
-string getEvent() {
-    vector<string> nationalEvents = {"EAN", "NIC", "NPT", "RMT", "RWT"};
+std::string getEvent() {
+    std::vector<std::string> nationalEvents = {"EAN", "NIC", "NPT", "RMT", "RWT"};
 
-    vector<string> stateEvents = { "ADR", "AVW", "AVA", "BZW", "BLU", "CAE", "CDW", "CEM", "CFW", "CFA", "DSW", "EQW", "EVI",
-                             "EWW", "FRW", "FFW", "FFA", "FFS", "FLW", "FLA", "FLS", "HMW", "HWW", "HWA", "HUW", "HUA",
-                             "HLS", "LEW", "LAE", "NMN", "TOE", "NUW", "DMO", "RHW", "SVR", "SVA", "SVS", "SPW", "SMW",
-                             "SPS", "SSA", "SSW", "TOR", "TOA", "TRW", "TRA", "TSW", "TSA", "VOW", "WSW", "WSA"};
-    vector<string> events;
+    std::vector<std::string> stateEvents = { "ADR", "AVW", "AVA", "BZW", "BLU", "CAE", "CDW", "CEM", "CFW", "CFA", "DSW", "EQW", "EVI",
+                                   "EWW", "FRW", "FFW", "FFA", "FFS", "FLW", "FLA", "FLS", "HMW", "HWW", "HWA", "HUW", "HUA",
+                                   "HLS", "LEW", "LAE", "NMN", "TOE", "NUW", "DMO", "RHW", "SVR", "SVA", "SVS", "SPW", "SMW",
+                                   "SPS", "SSA", "SSW", "TOR", "TOA", "TRW", "TRA", "TSW", "TSA", "VOW", "WSW", "WSA"
+                                 };
+    std::vector<std::string> events;
     events.insert(events.end(), nationalEvents.begin(), nationalEvents.end());
     events.insert(events.end(), stateEvents.begin(), stateEvents.end());
-    string event = UI::getChoice(&events, 6);
+    std::string event = UI::getChoice(&events, 6);
     return event;
 }
 
-string getOrigin() {
-    vector<string> originators = {"EAS", "CIV", "WXR", "PEP"};
+std::string getOrigin() {
+    std::vector<std::string> originators = {"EAS", "CIV", "WXR", "PEP"};
 
-    string origin  = UI::getChoice(&originators);
+    std::string origin  = UI::getChoice(&originators);
     return origin;
 }
 
 Alert::WATs getWat() {
-    cout << "Select the Attention Tone";
-    vector<string> wats = { "NRW", "Normal" };
-    string choice = UI::getChoice(&wats);
+    std::cout << "Select the Attention Tone" << std::endl;
+    std::vector<std::string> wats = { "NRW", "Normal" };
+    std::string choice = UI::getChoice(&wats);
     if (choice == wats[0]) {
         return Alert::NRW_WAT;
     } else {
@@ -101,40 +104,41 @@ Alert::WATs getWat() {
 }
 
 std::string getParticipant() {
-    cout << "Participant: ";
+    std::cout << "Participant: ";
     std::string part;
     while (TRUE) {
-        cin >> part;
+        std::cin >> part;
         if (part.length() != 8) {
-            cout << "Participant must 8 characters long";
+            std::cout << "Participant must 8 characters long";
         }
         return part;
     }
 }
 
 int getDate() {
-   cout << "Enter Start Date: ";
-   return UI::getIntFromUser(0, 366);
+    std::cout << "Enter Start Date: ";
+    return UI::getIntFromUser(0, 366);
 }
 
 int getStartHour() {
-    cout << "Enter Start Hour: ";
+    std::cout << "Enter Start Hour: ";
     return UI::getIntFromUser(0, 23);
 }
 
 
 int getStartMinute() {
-    cout << "Enter the Start Minute: ";
+    std::cout << "Enter the Start Minute: ";
     return UI::getIntFromUser(0, 59);
 }
 
-void getAreas(vector<string> *locations) {
+void getAreas(std::vector<std::string> *locations) {
+    std::cout << "Type \"DONE\" when done entering locations" << std::endl;
     for (int i = 0; i < 31; i++) {
-        string location;
-        cout << "Enter location: ";
-        cin >> location;
+        std::string location;
+        std::cout << "Enter location: ";
+        std::cin >> location;
         if (location == "DONE") {
-            cout << "Done Entering locations." << endl;
+            std:: cout << "Done Entering locations." << std::endl;
             break;
         } else {
             locations->push_back(Utils::zero_pad_int(location, 6));
