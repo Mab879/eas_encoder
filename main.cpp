@@ -10,70 +10,134 @@
 
 #include <iostream>
 #include <math.h>
-#include <sndfile.h>
 #include <vector>
+#include <algorithm>
 
 #include "Utils.h"
 #include "eas.h"
 #include "audio.h"
+#include "Alert.cpp"
+#include "UI.h"
+
+#define TRUE 1
 
 using namespace std;
 
+void getAreas(vector<string> *locations);
+int getDate();
+int getStartHour();
+int getStartMinute();
+std::string getParticipant();
+Alert::WATs getWat();
+string getOrigin();
+string getEvent();
+string getLength();
+
 int main() {
-    auto *sound_data = new std::vector<double>;
-    auto *bits = new std::vector<bool>();
+    auto *a = new Alert();
 
-    Utils::bit_string_to_bit_stream((vector<bool> &) *bits, PREAMBLE);
-    Utils::string_to_bit_stream((vector<bool> &) *bits, HEADER);
-    Utils::string_to_bit_stream((vector<bool> &) *bits, "-WXR");
-    Utils::string_to_bit_stream((vector<bool> &) *bits, "-TOR");
-    Utils::string_to_bit_stream((vector<bool> &) *bits, "-019169");
-    Utils::string_to_bit_stream((vector<bool> &) *bits, "-019153");
-    Utils::string_to_bit_stream((vector<bool> &) *bits, "+0045");
-    Utils::string_to_bit_stream((vector<bool> &) *bits, "-2941320");
-    Utils::string_to_bit_stream((vector<bool> &) *bits, "-KDSM/NWS-");
+    a->origin = getOrigin();
 
-    Audio::generate_tone(0, (vector<double> &) *sound_data, SAMPLE_RATE);
+    a->event = getEvent();
 
-    for (int i = 0; i < 3; i++) {
-        Audio::generate_afsk((vector<double> &) *sound_data, (vector<bool> &) *bits);
-        Audio::generate_tone(0, (vector<double> &) *sound_data, SAMPLE_RATE);
-    }
+    // Lengths, could be programmatically produced
+    a->length = getLength();
 
-    bits->clear();
+    // Areas
+    std::vector<std::string> areas;
+    getAreas(&areas);
+    a->areas = areas;
 
-    Audio::generate_tone(NRW_WAT_FREQ, (vector<double> &) *sound_data, SAMPLE_RATE * 8);
-    //Audio::generate_dual_tone(WAT_FREQ_1, WAT_FREQ_2, (vector<double> &) *sound_data, SAMPLE_RATE * 5);
-    Audio::generate_tone(0, (vector<double> &) *sound_data, SAMPLE_RATE);
+    // Get Date Info
+    a->date = getDate();
+    a->hour = getStartHour();
+    a->minute = getStartMinute();
+    a->participant = getParticipant();
+    a->wat = getWat();
 
-    Utils::bit_string_to_bit_stream((vector<bool> &) *bits, PREAMBLE);
-    Utils::string_to_bit_stream((vector<bool> &) *bits, EOM);
+    a->create_alert("eas_alert_1.wav");
+    delete a;
+    exit(EXIT_SUCCESS);
 
-    for (int i = 0; i < 3; i++) {
-        Audio::generate_afsk((vector<double> &) *sound_data, (vector<bool> &) *bits);
-        Audio::generate_tone(0, (vector<double> &) *sound_data, SAMPLE_RATE);
-    }
-
-
-    struct SF_INFO info{};
-
-    info.channels = 1;
-    info.format = SF_FORMAT_WAV | SF_FORMAT_PCM_32;
-    info.samplerate = SAMPLE_RATE;
-    info.sections = 1;
-    info.seekable = 1;
-
-    const char *fileName = "eas_ean.wav";
-
-    SNDFILE *sf = sf_open(fileName, SFM_WRITE, &info);
-    fprintf(stderr, "%s\n", sf_error_number(sf_error(sf)));
-    if (sf_write_double(sf, sound_data->data(), sound_data->size()) != sound_data->size()) {
-        fprintf(stderr, "%s\n", sf_error_number(sf_error(sf)));
-    }
-    sf_write_sync(sf);
-    sf_close(sf);
-
-    delete bits;
-    delete sound_data;
 }
 
+string getLength() {
+    vector<string> lengths = {"0015", "0030", "0045", "0100", "0115", "0130", "0145", "0200", "0215", "2030"};
+    string length = UI::getChoice(&lengths);
+    return length;
+}
+
+string getEvent() {
+    vector<string> nationalEvents = {"EAN", "NIC", "NPT", "RMT", "RWT"};
+
+    vector<string> stateEvents = { "ADR", "AVW", "AVA", "BZW", "BLU", "CAE", "CDW", "CEM", "CFW", "CFA", "DSW", "EQW", "EVI",
+                             "EWW", "FRW", "FFW", "FFA", "FFS", "FLW", "FLA", "FLS", "HMW", "HWW", "HWA", "HUW", "HUA",
+                             "HLS", "LEW", "LAE", "NMN", "TOE", "NUW", "DMO", "RHW", "SVR", "SVA", "SVS", "SPW", "SMW",
+                             "SPS", "SSA", "SSW", "TOR", "TOA", "TRW", "TRA", "TSW", "TSA", "VOW", "WSW", "WSA"};
+    vector<string> events;
+    events.insert(events.end(), nationalEvents.begin(), nationalEvents.end());
+    events.insert(events.end(), stateEvents.begin(), stateEvents.end());
+    string event = UI::getChoice(&events, 6);
+    return event;
+}
+
+string getOrigin() {
+    vector<string> originators = {"EAS", "CIV", "WXR", "PEP"};
+
+    string origin  = UI::getChoice(&originators);
+    return origin;
+}
+
+Alert::WATs getWat() {
+    cout << "Select the Attention Tone";
+    vector<string> wats = { "NRW", "Normal" };
+    string choice = UI::getChoice(&wats);
+    if (choice == wats[0]) {
+        return Alert::NRW_WAT;
+    } else {
+        return Alert::NORMAL_WAT;
+    }
+
+}
+
+std::string getParticipant() {
+    cout << "Participant: ";
+    std::string part;
+    while (TRUE) {
+        cin >> part;
+        if (part.length() != 8) {
+            cout << "Participant must 8 characters long";
+        }
+        return part;
+    }
+}
+
+int getDate() {
+   cout << "Enter Start Date: ";
+   return UI::getIntFromUser(0, 366);
+}
+
+int getStartHour() {
+    cout << "Enter Start Hour: ";
+    return UI::getIntFromUser(0, 23);
+}
+
+
+int getStartMinute() {
+    cout << "Enter the Start Minute: ";
+    return UI::getIntFromUser(0, 59);
+}
+
+void getAreas(vector<string> *locations) {
+    for (int i = 0; i < 31; i++) {
+        string location;
+        cout << "Enter location: ";
+        cin >> location;
+        if (location == "DONE") {
+            cout << "Done Entering locations." << endl;
+            break;
+        } else {
+            locations->push_back(Utils::zero_pad_int(location, 6));
+        }
+    }
+}

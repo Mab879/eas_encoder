@@ -12,6 +12,9 @@
 #include <vector>
 #include <bitset>
 #include <stdexcept>
+#include <iostream>
+#include <typeinfo>
+#include <sstream>
 
 #include "Utils.h"
 #include "audio.h"
@@ -22,10 +25,9 @@
 void Utils::string_to_bit_stream(std::vector<bool> &vector, std::string message) {
     for (std::size_t i = 0; i < message.size(); i++) {
         auto bitstring = std::bitset<8>(message.c_str()[i]);
-
-        for (int j = 0; j < bitstring.size(); j++) {
-            vector.push_back(bitstring[j]);
-        }
+        std::stringstream input;
+        input << bitstring;
+        Utils::bit_string_to_bit_stream(vector, input.str());
     }
 }
 
@@ -45,3 +47,18 @@ void Utils::bit_string_to_bit_stream(std::vector<bool> &vector, std::string bits
     }
 }
 
+/// https://stackoverflow.com/a/26343947
+/// \param num number to convert
+/// \param totalLength total length at the end
+/// \return
+std::string Utils::zero_pad_int(int num, int totalLength) {
+    return zero_pad_int(std::to_string(num), totalLength);
+}
+
+/// Given string will pre-append the number of zeros needed expand to the total length
+/// \param old_string old string to pre-append
+/// \param totalLength the derised end Length
+/// \return a zero padded string of length totalLength
+std::string Utils::zero_pad_int(const std::string &old_string, int totalLength) {
+    return std::string(totalLength - old_string.length(), '0') + old_string;
+}

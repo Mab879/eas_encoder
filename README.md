@@ -13,6 +13,10 @@ This project makes use of CMake.
     $ cmake ..
     $ make
 
+
+ ## Source
+ This program is based on the EAS protocol defined in [47 CRF 11.31](https://www.law.cornell.edu/cfr/text/47/11.31).
+
 Copyright (C) 2018  Matthew Burket
 
 This program is free software: you can redistribute it and/or modify

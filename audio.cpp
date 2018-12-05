@@ -7,8 +7,11 @@
  * as published by the Free Software Foundation; either version 3
  * of the License, or (at your option) any later version.
  */
+
 #include <math.h>
 #include <string>
+#include <sndfile.h>
+#include <iostream>
 
 #include "eas.h"
 #include "audio.h"
@@ -50,4 +53,33 @@ void Audio::generate_afsk(std::vector<double> &vector, std::vector<bool> &messag
             generate_tone(SPACE_FREQ, vector, length);
         }
     }
+}
+
+/// Make silence for the number of samples given, appends to the end of the given vector
+/// \param vector
+/// \param length
+void Audio::generate_silence(std::vector<double> &vector, long length) {
+    generate_tone(0, vector, length);
+}
+
+/// Create a WAV file from the given vector of sound data, saves it to the given file name
+/// \param sound_data sound data, doubles
+/// \param fileName file name to save file
+void Audio::create_wav(vector<double> *sound_data, const std::string &fileName) {
+    struct SF_INFO info {};
+
+    info.channels = 1;
+    info.format = SF_FORMAT_WAV | SF_FORMAT_PCM_32;
+    info.samplerate = SAMPLE_RATE;
+    info.sections = 1;
+    info.seekable = 1;
+
+    SNDFILE *sf = sf_open(fileName.c_str(), SFM_WRITE, &info);
+    if (sf_write_double(sf, sound_data->data(), sound_data->size()) != sound_data->size()) {
+        fprintf(stderr, "%s\n", sf_error_number(sf_error(sf)));
+    } else {
+        std::cout << "Wrote EAS Alert to";
+    }
+    sf_write_sync(sf);
+    sf_close(sf);
 }

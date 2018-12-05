@@ -14,9 +14,14 @@
 #include <vector>
 #include <string>
 
+/**
+ * This class has various helper methods
+ */
 class Utils {
 public:
     static void string_to_bit_stream(std::vector<bool> &vector, std::string message);
     static void bit_string_to_bit_stream(std::vector<bool> &vector, std::string bitstring);
+    static std::string zero_pad_int(int num, int totalLength);
+    static std::string zero_pad_int(const std::string &old_string, int totalLength);
 };
 #endif //SAMEENCODER_UTILS_H
