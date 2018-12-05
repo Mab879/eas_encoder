@@ -13,28 +13,6 @@
 #include "audio.h"
 
 
-void EAS::create_header(const alert *alert, std::string &header) {
-    header.append(HEADER);
-    header.push_back('-');
-    header.append(alert->origin);
-    header.push_back('-');
-    header.append(alert->event);
-    for (auto locationsIter = alert->areas.begin(); locationsIter < alert->areas.end(); locationsIter++) {
-        header.push_back('-');
-        header.append(*locationsIter);
-
-    }
-    header.push_back('-');
-    header.append(alert->length);
-    header.push_back('-');
-    header.append(Utils::zero_pad_int(alert->date,3));
-    header.append(Utils::zero_pad_int(alert->hour, 2));
-    header.append(Utils::zero_pad_int(alert->minute, 2));
-    header.push_back('-');
-    header.append(alert->participant);
-    header.push_back('-');
-}
-
 void EAS::create_wat(const alert *alert, const std::vector<double> *sound_data) {
     if (alert->wat == NRW_WAT) {
         Audio::generate_tone(NRW_WAT_FREQ, (std::vector<double> &) *sound_data, SAMPLE_RATE * 8);

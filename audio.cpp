@@ -55,11 +55,16 @@ void Audio::generate_afsk(std::vector<double> &vector, std::vector<bool> &messag
     }
 }
 
-
+/// Make silence for the number of samples given, appends to the end of the given vector
+/// \param vector
+/// \param length
 void Audio::generate_silence(std::vector<double> &vector, long length) {
     generate_tone(0, vector, length);
 }
 
+/// Create a WAV file from the given vector of sound data, saves it to the given file name
+/// \param sound_data sound data, doubles
+/// \param fileName file name to save file
 void Audio::create_wav(vector<double> *sound_data, const std::string &fileName) {
     struct SF_INFO info {};
 

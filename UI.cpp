@@ -7,10 +7,18 @@
 
 #define TRUE 1
 
+/// Have the user choose a choice
+/// One per online
+/// \param vector the vector of string for the user to pick from
+/// \return the string they chose
 std::string UI::getChoice(std::vector<std::string> *vector) {
     return getChoice(vector, 1);
 }
 
+/// Have the user choose a choice
+/// \param vector the vector of string for the user to pick from
+/// \param perLine the number of choices per line
+/// \return the string they chose
 std::string UI::getChoice(std::vector<std::string> *vector, int perLine) {
     int count = 1;
     for (auto &it : *vector) {
@@ -21,33 +29,40 @@ std::string UI::getChoice(std::vector<std::string> *vector, int perLine) {
         count++;
     }
 
-    bool inputValid = false;
-    unsigned long choice;
     std::cout << std::endl;
-    do {
-        printf("Enter choice: ");
-        std::cin >> choice;
-        if (choice < 0) {
-            printf("Invalid choice, must be greater than 0.");
-        } else if (choice > vector->size()) {
-            printf("Invalid choice, must be less or equal to %zu.", vector->size());
-        } else {
-            inputValid = true;
-        }
-    } while (!inputValid);
+    unsigned long choice = getIntFromUser(1, vector->size());
     return vector->at(choice-1);
 }
 
-int UI::getIntFromUser() {
-    while (TRUE) {
+/// Get an integer from the user
+/// \return the integer the user entered
+unsigned long UI::getIntFromUser() {
+    while (true) {
         std::string strNumber;
         std::cin >> strNumber;
-        int i;
+        unsigned long  i;
         try {
-            i = stoi(strNumber);
+            i = stoul(strNumber);
         } catch  (std::invalid_argument) {
             continue;
         }
         return i;
+    }
+}
+
+/// Get a integer from the user in a range
+/// \param low the lowest acceptable integer
+/// \param high the highest acceptable integer
+/// \return an integer from the user in the given range
+unsigned long UI::getIntFromUser(unsigned long low, unsigned long high) {
+    while (true) {
+        unsigned long userInt = getIntFromUser();
+        if (userInt < low) {
+            std::cout << "You must enter a integer greater than or equal to " << low << std::endl;
+        } else if (userInt > high) {
+            std::cout << "You must enter a integer less than or equal to " << high << std::endl;
+        } else {
+            return userInt;
+        }
     }
 }

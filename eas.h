@@ -27,7 +27,6 @@
 
 class EAS {
 public:
-    static void create_header(const alert *alert, std::string &header);
     static void create_wat(const alert *alert, const std::vector<double> *sound_data);
 };
 

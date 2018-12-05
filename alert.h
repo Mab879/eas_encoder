@@ -24,9 +24,11 @@ public:
     std::string participant;
     WATs wat;
     void create_alert(std::string filename);
+    std::string create_header_string();
 
 private:
-    void create_eom(const std::vector<double> *sound_data, const std::vector<bool> *bits) const;
+    void create_eom_tones(const std::vector<double> *sound_data) const;
+    void create_header_tones(const std::vector<double> *sound_data, const std::string &header) const;
 };
 
 

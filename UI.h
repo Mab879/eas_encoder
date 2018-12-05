@@ -12,7 +12,8 @@ class UI {
 public:
     static std::string getChoice(std::vector<std::string> *vector);
     static std::string getChoice(std::vector<std::string> *vector, int perLine);
-    static int getIntFromUser();
+    static unsigned long getIntFromUser();
+    static unsigned long getIntFromUser(unsigned long low, unsigned long high);
 };
 
 

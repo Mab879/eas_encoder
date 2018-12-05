@@ -8,6 +8,11 @@
  * of the License, or (at your option) any later version.
  */
 
+/**
+ * @file Utils.cpp
+ * @author Matthew Burket
+ */
+
 #include <string>
 #include <vector>
 #include <bitset>
@@ -52,10 +57,13 @@ void Utils::bit_string_to_bit_stream(std::vector<bool> &vector, std::string bits
 /// \param totalLength total length at the end
 /// \return
 std::string Utils::zero_pad_int(int num, int totalLength) {
-    std::string old_string = std::to_string(num);
-    return std::string(totalLength - old_string.length(), '0') + old_string;
+    return zero_pad_int(std::to_string(num), totalLength);
 }
 
+/// Given string will pre-append the number of zeros needed expand to the total length
+/// \param old_string old string to pre-append
+/// \param totalLength the derised end Length
+/// \return a zero padded string of length totalLength
 std::string Utils::zero_pad_int(const std::string &old_string, int totalLength) {
     return std::string(totalLength - old_string.length(), '0') + old_string;
 }

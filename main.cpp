@@ -89,6 +89,7 @@ string getOrigin() {
 }
 
 WATs getWat() {
+    cout << "Select the Attention Tone";
     vector<string> wats = { "NRW", "Normal" };
     string choice = UI::getChoice(&wats);
     if (choice == wats[0]) {
@@ -113,18 +114,18 @@ std::string getParticipant() {
 
 int getDate() {
    cout << "Enter Start Date: ";
-   return UI::getIntFromUser();
+   return UI::getIntFromUser(0, 366);
 }
 
 int getStartHour() {
     cout << "Enter Start Hour: ";
-    return UI::getIntFromUser();
+    return UI::getIntFromUser(0, 23);
 }
 
 
 int getStartMinute() {
     cout << "Enter the Start Minute: ";
-    return UI::getIntFromUser();
+    return UI::getIntFromUser(0, 59);
 }
 
 void getAreas(vector<string> *locations) {
