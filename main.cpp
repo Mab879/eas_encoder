@@ -31,6 +31,8 @@ std::string getOrigin();
 std::string getEvent();
 std::string getLength();
 
+std::string getFileName();
+
 int main() {
     auto *a = new Alert();
 
@@ -53,14 +55,19 @@ int main() {
     a->participant = getParticipant();
     a->wat = getWat();
 
-    std::cout << "Enter file name, should end with .wav: ";
-    std::string filename;
-    std::cin >> filename;
+    std::string filename = getFileName();
 
     a->create_alert(filename);
     delete a;
     exit(EXIT_SUCCESS);
 
+}
+
+std::string getFileName() {
+    std::cout << "Enter file name, should end with .wav: ";
+    std::string filename;
+    std::cin >> filename;
+    return filename;
 }
 
 std::string getLength() {
