@@ -12,7 +12,6 @@
 #define SAMEENCODER_AUDIO_H
 #include <vector>
 
-
 /**
  * This class contains audio related helper functions.
  */

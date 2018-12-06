@@ -40,7 +40,7 @@ int main() {
 
     a->event = getEvent();
 
-    // Lengths, could be programmatically produced
+    // Length
     a->length = getLength();
 
     // Areas
@@ -63,6 +63,8 @@ int main() {
 
 }
 
+/// get the filename for the alert
+/// \return
 std::string getFileName() {
     std::cout << "Enter file name, should end with .wav: ";
     std::string filename;
@@ -70,12 +72,18 @@ std::string getFileName() {
     return filename;
 }
 
+/// Get the length of the alert
+/// \return
 std::string getLength() {
-    std::vector<std::string> lengths = {"0015", "0030", "0045", "0100", "0115", "0130", "0145", "0200", "0215", "2030"};
+    // Could be programmatically produced
+    std::vector<std::string> lengths = {"0015", "0030", "0045", "0100", "0115", "0130", "0145", "0200", "2030", "0300",
+                                        "0330", "0400", "0430", "0500", "0530", "0600", "6030", "0700", "0730", "0800"};
     std::string length = UI::getChoice(&lengths);
     return length;
 }
 
+/// Get the event code for the alert
+/// \return
 std::string getEvent() {
     std::vector<std::string> nationalEvents = {"EAN", "NIC", "NPT", "RMT", "RWT"};
 
@@ -91,6 +99,8 @@ std::string getEvent() {
     return event;
 }
 
+/// Get the origin of the alert
+/// \return
 std::string getOrigin() {
     std::vector<std::string> originators = {"EAS", "CIV", "WXR", "PEP"};
 
@@ -98,6 +108,8 @@ std::string getOrigin() {
     return origin;
 }
 
+/// Get the WAT the user wants for the alert
+/// \return
 Alert::WATs getWat() {
     std::cout << "Select the Attention Tone" << std::endl;
     std::vector<std::string> wats = { "NRW", "Normal" };
@@ -110,6 +122,9 @@ Alert::WATs getWat() {
 
 }
 
+/// Get the participaint for the alert
+/// Last part of the header
+/// \return
 std::string getParticipant() {
     std::cout << "Participant: ";
     std::string part;
@@ -122,22 +137,30 @@ std::string getParticipant() {
     }
 }
 
+/// Get the date for the alert
+/// \return
 int getDate() {
     std::cout << "Enter Start Date: ";
     return UI::getIntFromUser(0, 366);
 }
 
+
+/// Get the start hour of the alert
+/// \return
 int getStartHour() {
     std::cout << "Enter Start Hour: ";
     return UI::getIntFromUser(0, 23);
 }
 
-
+/// Get the start minute of the alert with
+/// \return
 int getStartMinute() {
     std::cout << "Enter the Start Minute: ";
     return UI::getIntFromUser(0, 59);
 }
 
+/// Get the areas for the alert from the user
+/// \param locations
 void getAreas(std::vector<std::string> *locations) {
     std::cout << "Type \"DONE\" when done entering locations" << std::endl;
     for (int i = 0; i < 31; i++) {

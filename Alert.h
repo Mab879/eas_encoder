@@ -14,11 +14,6 @@
 #include <vector>
 #include <string>
 
-
-
-
-
-
 /**
  * This this represents an EAS Alert
  */

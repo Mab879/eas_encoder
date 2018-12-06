@@ -13,8 +13,6 @@
 #include "audio.h"
 #include "Utils.h"
 
-
-
 /// Given a file name will create an WAV of EAS tone from this alert
 /// \param filename filename to save the WAV as
 void Alert::create_alert(std::string filename) {
