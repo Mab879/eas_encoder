@@ -64,6 +64,7 @@ jobs:
     #    uses a compiled language
 
     - run: |
+       apt install libsndfile1-dev
        mkdir build
        cd build
        cmake ..
